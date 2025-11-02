@@ -1,0 +1,34 @@
+name: Docker Metadata
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: Target image (e.g. ghcr.io/org/repo/image)
+        required: true
+        type: string
+      tags:
+        description: Newline separated docker/metadata-action tag rules
+        required: true
+        type: string
+    outputs:
+      tags:
+        description: Resolved tags for docker/build-push-action
+        value: ${{ jobs.generate.outputs.tags }}
+      labels:
+        description: OCI labels for docker/build-push-action
+        value: ${{ jobs.generate.outputs.labels }}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+      labels: ${{ steps.meta.outputs.labels }}
+    steps:
+      - name: Generate image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ inputs.image }}
+          tags: ${{ inputs.tags }}

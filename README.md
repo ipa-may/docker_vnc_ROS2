@@ -1,4 +1,9 @@
-# Docker images for ROS 2 VNC [![Build & Push 05 TurboVNC Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-05.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-05.yml)
+# Docker images for ROS 2 VNC
+
+| Status                                                                                                                                                                                                                | Docker Image Name                                   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| [![Build & Push 05 TurboVNC Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-05.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-05.yml) | `ghcr.io/ipa-may/ros2-turbovnc-novnc:jazzy`         |
+| [![Build & Push 07 Gazebo Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-07.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-07.yml)   | `ghcr.io/ipa-may/ros2-turbovnc-novnc:jazzy-gazebo` |
 
 ## Build the docker image
 
