@@ -2,13 +2,19 @@
 
 | Status                                                                                                                                                                                                                | Docker Image Name                                   |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| [![Build & Push 05 TurboVNC Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-05.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-05.yml) | `ghcr.io/ipa-may/ros2-turbovnc-novnc:jazzy`         |
-| [![Build & Push 07 Gazebo Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-07.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-07.yml)   | `ghcr.io/ipa-may/ros2-turbovnc-novnc:jazzy-gazebo` |
+| [![Build & Push turboVNC 01 ROS2 Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-turboVNC_01_ros2.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-turboVNC_01_ros2.yml) | `ghcr.io/ipa-may/ros2-turbovnc-novnc:jazzy`         |
+| [![Build & Push turboVNC 02 ROS2 Gazebo Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-turboVNC_02_ros2_gazebo.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-turboVNC_02_ros2_gazebo.yml)   | `ghcr.io/ipa-may/ros2-turbovnc-novnc:jazzy-gazebo` |
+
+## Repository layout
+
+- `tigerVNC/` — TigerVNC-based development desktops (`01_…`, `02_…`, `03_…` variants).
+- `turboVNC/turboVNC_01_ros2/` — TurboVNC + VirtualGL + noVNC base image (publishes `jazzy`, `jazzy-fixed-v2`).
+- `turboVNC/turboVNC_02_ros2_gazebo/` — TurboVNC base with Gazebo + ros2_control additions.
 
 ## Build the docker image
 
 ```sh
-cd 01_jazzy-vscode-xfce-tigerVNC-novnc/
+cd tigerVNC/01_jazzy-vscode-xfce-tigerVNC-novnc/
 docker compose build
 ```
 

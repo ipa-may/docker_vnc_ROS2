@@ -1,11 +1,11 @@
-name: Build & Push 05 TurboVNC Image
+name: Build & Push turboVNC 01 ROS2 Image
 
 on:
   push:
     branches: [main]
     paths:
-      - "05_jazzy-turboVNC-virtualGL-noVNC/**"
-      - ".github/workflows/build-and-push-05.yml"
+      - "turboVNC/turboVNC_01_ros2/**"
+      - ".github/workflows/build-and-push-turboVNC_01_ros2.yml"
       - ".github/workflows/docker-metadata.yml"
   workflow_dispatch:
 
@@ -19,6 +19,7 @@ jobs:
         type=ref,event=branch
         type=sha
         type=raw,value=jazzy
+        type=raw,value=jazzy-fixed-v2
 
   build:
     name: Build & Push
@@ -44,7 +45,7 @@ jobs:
       - name: Build & push
         uses: docker/build-push-action@v5
         with:
-          context: ./05_jazzy-turboVNC-virtualGL-noVNC
+          context: ./turboVNC/turboVNC_01_ros2
           push: true
           provenance: false
           tags: ${{ needs.metadata.outputs.tags }}

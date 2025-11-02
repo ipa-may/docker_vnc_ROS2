@@ -1,15 +1,15 @@
-name: Build & Push 07 Gazebo Image
+name: Build & Push turboVNC 02 ROS2 Gazebo Image
 
 on:
   push:
     branches: [ main ]
     paths:
-      - '07_jazzy-turboVNC-virtualGL-noVNC-gazebo-ros2control/**'
-      - '.github/workflows/build-and-push-07.yml'
+      - 'turboVNC/turboVNC_02_ros2_gazebo/**'
+      - '.github/workflows/build-and-push-turboVNC_02_ros2_gazebo.yml'
       - '.github/workflows/docker-metadata.yml'
   workflow_run:
     workflows:
-      - Build & Push 05 TurboVNC Image
+      - Build & Push turboVNC 01 ROS2 Image
     types:
       - completed
   workflow_dispatch:
@@ -51,7 +51,7 @@ jobs:
       - name: Build & push
         uses: docker/build-push-action@v5
         with:
-          context: ./07_jazzy-turboVNC-virtualGL-noVNC-gazebo-ros2control
+          context: ./turboVNC/turboVNC_02_ros2_gazebo
           push: true
           provenance: false
           tags: ${{ needs.metadata.outputs.tags }}
