@@ -1,6 +1,6 @@
 # Compose override to enable NVIDIA GPU
 services:
-  ros2-turbovnc-novnc:
+  ros2-jazzy-turbovnc-novnc-gazebo:
     deploy:
       resources:
         reservations:

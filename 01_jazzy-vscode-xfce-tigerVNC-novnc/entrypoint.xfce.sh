@@ -19,6 +19,16 @@ if [ "$USER" != "root" ] && ! id -u "$USER" >/dev/null 2>&1; then
   echo "$USER:$PASSWORD" | chpasswd
 fi
 
+# Ensure X11 socket directory exists for non-root VNC sessions
+mkdir -p /tmp/.X11-unix
+chown root:root /tmp/.X11-unix
+chmod 1777 /tmp/.X11-unix
+rm -f /tmp/.X1-lock /tmp/.X11-unix/X1
+
+# Prevent xauth warnings by creating the authority file ahead of time
+touch "${HOME_DIR}/.Xauthority"
+chown "${USER}:${USER}" "${HOME_DIR}/.Xauthority"
+
 # VNC password
 mkdir -p "${HOME_DIR}/.vnc"
 echo "${PASSWORD}" | vncpasswd -f > "${HOME_DIR}/.vnc/passwd"
@@ -31,7 +41,7 @@ cat > "${XSTART}" <<'EOF'
 #!/bin/sh
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
-startxfce4 &
+exec startxfce4
 EOF
 chown "${USER}:${USER}" "${XSTART}"
 chmod 755 "${XSTART}"

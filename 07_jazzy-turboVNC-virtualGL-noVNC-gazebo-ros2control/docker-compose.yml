@@ -1,11 +1,9 @@
 services:
-  ros2-turbovnc-novnc:
+  ros2-jazzy-turbovnc-novnc-gazebo:
     build:
       context: .
-      args:
-        INSTALL_PACKAGE: desktop # or 'ros-base' for leaner
-    image: ros2-turbovnc-novnc:jazzy-fixed-v2
-    container_name: ros2-turbovnc-novnc
+    image: ros2-turbovnc-novnc:jazzy-gazebo
+    container_name: ros2-turbovnc-novnc-gazebo
     environment:
       USER: ubuntu
       PASSWORD: change-me

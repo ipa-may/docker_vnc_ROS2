@@ -50,7 +50,6 @@ cat > "${XSTART}" <<'EOF'
 #!/bin/sh
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
-vncconfig -nowin &
 exec startxfce4
 EOF
 chown "${USER}:${USER}" "${XSTART}"

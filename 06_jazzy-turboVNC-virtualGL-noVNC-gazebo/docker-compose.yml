@@ -1,11 +1,11 @@
 services:
-  ros2-turbovnc-novnc:
+  ros2-jazzy-turbovnc-novnc:
     build:
       context: .
       args:
-        INSTALL_PACKAGE: desktop # or 'ros-base' for leaner
-    image: ros2-turbovnc-novnc:jazzy-fixed-v2
-    container_name: ros2-turbovnc-novnc
+        INSTALL_PACKAGE: desktop   # or 'ros-base' for leaner
+    image: ros2-jazzy-turbovnc-novnc
+    container_name: ros2-jazzy-turbovnc-novnc
     environment:
       USER: ubuntu
       PASSWORD: change-me
@@ -21,8 +21,8 @@ services:
       ROS_DOMAIN_ID: "7"
       ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
     ports:
-      - "8080:6080" # noVNC browser
-      - "5901:5901" # TurboVNC viewer
+      - "8080:6080"   # noVNC browser
+      - "5901:5901"   # TurboVNC viewer
     volumes:
       - ./ros2_ws:/home/ubuntu/ros2_ws
     shm_size: "2gb"

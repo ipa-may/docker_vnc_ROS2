@@ -1,19 +1,9 @@
-# ROS 2 Jazzy + XFCE + TurboVNC + VirtualGL + noVNC
+# ROS 2 Jazzy + XFCE + TurboVNC + VirtualGL + noVNC + Gazebo
 
-```sh
-docker tag ros2-turbovnc-novnc:jazzy-fixed-v2 ghcr.io/ipa-may/ros2-turbovnc-novnc:jazzy-fixed-v2
-
-
-docker tag ros2-turbovnc-novnc:jazzy-gazebo ghcr.io/ipa-may/ros2-turbovnc-novnc:jazzy-gazebo
-docker push ghcr.io/ipa-may/ros2-turbovnc-novnc:jazzy-gazebo
-
-```
-
-This variant adds **noVNC** (browser access) while keeping **TurboVNC + VirtualGL** for maximum performance and optional GPU acceleration.
+This variant adds **noVNC** (browser access) while keeping **TurboVNC + VirtualGL** for maximum performance, optional GPU acceleration, and preinstalls the Gazebo (`ros-gz`) simulators plus Gazebo ROS integration.
 
 ## Files
-
-- `Dockerfile` — TurboVNC + VirtualGL + **noVNC**
+- `Dockerfile` — TurboVNC + VirtualGL + **noVNC** + Gazebo (ros-gz desktop + gazebo_ros_pkgs)
 - `entrypoint.sh` — creates user, configures TurboVNC, launches XFCE
 - `supervisord.conf` — runs TurboVNC and websockify/noVNC
 - `docker-compose.yml` — base (CPU/software rendering) with 5901 and 6080 exposed
@@ -22,7 +12,6 @@ This variant adds **noVNC** (browser access) while keeping **TurboVNC + VirtualG
 - `ros2_ws/` — your workspace
 
 ## Quick start (Windows PowerShell)
-
 ```powershell
 docker compose up --build
 # Browser noVNC: http://localhost:8080  (proxied to container 6080)
@@ -31,16 +20,15 @@ docker compose up --build
 ```
 
 ## Enable GPU (optional)
-
 ```powershell
 docker compose -f docker-compose.yml -f docker-compose.gpu.override.yml up --build
 # inside the container, run accelerated apps with vglrun:
 vglrun rviz2
 vglrun gz sim shapes
+gz sim shapes  # Gazebo (ros-gz) desktop shortcut
 ```
 
 ## Notes
-
 - **noVNC** proxies browser traffic to the TurboVNC server via `websockify`.
 - **VirtualGL** accelerates individual apps when launched with `vglrun`.
 - Keep `shm_size: "2gb"` for Gazebo cameras/physics.
@@ -52,7 +40,6 @@ vglrun gz sim shapes
   ```
 
 ## Sanity checks
-
 ```bash
 glxinfo | grep -E 'OpenGL renderer|OpenGL version'   # llvmpipe in desktop session
 vglrun glxinfo | grep -E 'OpenGL renderer|OpenGL version'  # should show NVIDIA GPU with GPU override
