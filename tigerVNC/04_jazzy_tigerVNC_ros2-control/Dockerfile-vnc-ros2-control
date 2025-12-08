@@ -1,10 +1,43 @@
-FROM ghcr.io/ipa-may/ros2-tigervnc-novnc:jazzy-vscode-xfce
+# TigerVNC multi-stage image with ros2_control stack
+ARG ROS_DISTRO=jazzy
 
-RUN apt-get update \
-  && apt-get install -y \
-  nano \
-  vim \
-  && rm -rf /var/lib/apt/lists/*
+# Stage 1: base TigerVNC/noVNC desktop
+FROM ghcr.io/ipa-may/ros2-tigervnc-novnc:jazzy-vscode-xfce AS tigervnc-base
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -q && \
+    apt-get install -y --no-install-recommends \
+      nano \
+      vim \
+      libi2c-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Stage 2: install ros2_control stack separately
+FROM ros:${ROS_DISTRO}-ros-base AS ros2-control-builder
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -q && \
+    apt-get install -y --no-install-recommends \
+      build-essential \
+      python3-colcon-common-extensions \
+      ros-${ROS_DISTRO}-ros2-control \
+      ros-${ROS_DISTRO}-ros2-controllers \
+      ros-${ROS_DISTRO}-hardware-interface \
+      ros-${ROS_DISTRO}-hardware-interface-testing \
+      ros-${ROS_DISTRO}-controller-manager \
+      ros-${ROS_DISTRO}-velocity-controllers \
+      ros-${ROS_DISTRO}-joint-state-broadcaster \
+      ros-${ROS_DISTRO}-robot-state-publisher \
+      ros-${ROS_DISTRO}-joint-state-publisher-gui \
+      ros-${ROS_DISTRO}-xacro \
+      ros-${ROS_DISTRO}-tf2 \
+      ros-${ROS_DISTRO}-tf2-msgs \
+      ros-${ROS_DISTRO}-rviz2 \
+      ros-${ROS_DISTRO}-plotjuggler-ros && \
+    rm -rf /var/lib/apt/lists/*
+
+# Stage 3: runtime inherits TigerVNC stack
+FROM tigervnc-base AS runtime
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Align container user/group with host IDs when provided
 ARG USERNAME=ros
@@ -37,51 +70,38 @@ RUN EXISTING_GROUP=$(getent group "$GROUP_ID" | cut -d: -f1 || true) \
  && mkdir -p /home/"$USERNAME"/.config \
  && chown "$USER_ID":"$GROUP_ID" /home/"$USERNAME"/.config
 
+# Copy ros2_control stack into runtime ROS tree
+COPY --from=ros2-control-builder /opt/ros/${ROS_DISTRO} /opt/ros/${ROS_DISTRO}
 
+# Provide colcon argcomplete/extension hooks expected by sourced environments
+RUN apt-get update -q && \
+    apt-get install -y --no-install-recommends \
+      python3-colcon-common-extensions \
+      python3-colcon-argcomplete \
+      libqt5x11extras5 \
+      liblua5.1-0 && \
+    rm -rf /var/lib/apt/lists/*
 
-# Ensure ros user can access ROS setup.bash by giving proper permissions
-RUN sudo chmod +rx /opt/ros/jazzy/setup.bash
+# Ensure ros user can access ROS setup file
+RUN chmod +rx /opt/ros/${ROS_DISTRO}/setup.bash
 
-# Setup sudo: gives the user specified by USERNAME the sudo permissions
-RUN apt-get update \
-  && apt-get install -y \
-  && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME\
-  && chmod 0440 /etc/sudoers.d/$USERNAME \
-  && rm -rf /var/lib/apt/lists/*
+# Setup sudo: gives the user specified by USERNAME passwordless sudo
+RUN echo ${USERNAME} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${USERNAME} && \
+    chmod 0440 /etc/sudoers.d/${USERNAME}
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  build-essential \
-  libi2c-dev \
-  python3-colcon-common-extensions \
-  ros-${ROS_DISTRO}-ros2-control \
-  ros-${ROS_DISTRO}-ros2-controllers \
-  ros-${ROS_DISTRO}-hardware-interface \
-  ros-${ROS_DISTRO}-hardware-interface-testing \
-  ros-${ROS_DISTRO}-controller-manager \
-  ros-${ROS_DISTRO}-velocity-controllers \
-  ros-${ROS_DISTRO}-joint-state-broadcaster \
-  ros-${ROS_DISTRO}-robot-state-publisher \
-  ros-${ROS_DISTRO}-joint-state-publisher-gui \
-  ros-${ROS_DISTRO}-xacro \
-  ros-${ROS_DISTRO}-tf2 \
-  ros-${ROS_DISTRO}-tf2-msgs \
-  ros-${ROS_DISTRO}-rviz2 \
-  ros-${ROS_DISTRO}-plotjuggler-ros \
-  && rm -rf /var/lib/apt/lists/*
+# Preserve upstream entrypoint for VNC/noVNC startup
+RUN mv /entrypoint.sh /entrypoint_base.sh
 
+COPY entrypoint_ros2_control.sh /ros_entrypoint.sh
+COPY bashrc /home/$USERNAME/.bashrc
 
-USER $USERNAME
-WORKDIR /home/$USERNAME
-
-RUN mkdir -p ~/ros2_ws/src
+RUN chmod +x /ros_entrypoint.sh /entrypoint_base.sh && \
+    chown $USERNAME:$GROUP_ID /home/$USERNAME/.bashrc && \
+    mkdir -p /home/$USERNAME/ros2_ws/src && \
+    chown -R $USERNAME:$GROUP_ID /home/$USERNAME/ros2_ws
 
 WORKDIR /home/$USERNAME/ros2_ws/src
 
-COPY entrypoint_ros2_control.sh /entrypoint.sh
-COPY bashrc /home/$USERNAME/.bashrc
-
-ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+ENTRYPOINT ["/ros_entrypoint.sh"]
 
 CMD ["bash"]
-
-USER root

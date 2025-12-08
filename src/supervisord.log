@@ -1,0 +1,34 @@
+2025-12-08 23:07:10,646 INFO Set uid to user 0 succeeded
+2025-12-08 23:07:10,648 INFO supervisord started with pid 36
+2025-12-08 23:07:11,649 INFO spawned: 'novnc' with pid 37
+2025-12-08 23:07:11,650 INFO spawned: 'vnc' with pid 38
+2025-12-08 23:07:13,948 INFO success: novnc entered RUNNING state, process has stayed up for > than 2 seconds (startsecs)
+2025-12-08 23:07:13,948 INFO success: vnc entered RUNNING state, process has stayed up for > than 2 seconds (startsecs)
+2025-12-08 23:14:16,472 WARN received SIGTERM indicating exit request
+2025-12-08 23:14:16,472 INFO waiting for novnc, vnc to die
+2025-12-08 23:21:54,684 INFO Set uid to user 0 succeeded
+2025-12-08 23:21:54,686 INFO supervisord started with pid 36
+2025-12-08 23:21:55,687 INFO spawned: 'novnc' with pid 37
+2025-12-08 23:21:55,689 INFO spawned: 'vnc' with pid 38
+2025-12-08 23:21:57,966 INFO success: novnc entered RUNNING state, process has stayed up for > than 2 seconds (startsecs)
+2025-12-08 23:21:57,967 INFO success: vnc entered RUNNING state, process has stayed up for > than 2 seconds (startsecs)
+2025-12-08 23:26:51,894 WARN received SIGTERM indicating exit request
+2025-12-08 23:26:51,894 INFO waiting for novnc, vnc to die
+2025-12-08 23:26:52,896 WARN stopped: vnc (terminated by SIGTERM)
+2025-12-08 23:26:52,922 INFO stopped: novnc (exit status 0)
+2025-12-08 23:29:15,657 INFO Set uid to user 0 succeeded
+2025-12-08 23:29:15,659 INFO supervisord started with pid 36
+2025-12-08 23:29:16,661 INFO spawned: 'novnc' with pid 37
+2025-12-08 23:29:16,662 INFO spawned: 'vnc' with pid 38
+2025-12-08 23:29:18,949 INFO success: novnc entered RUNNING state, process has stayed up for > than 2 seconds (startsecs)
+2025-12-08 23:29:18,949 INFO success: vnc entered RUNNING state, process has stayed up for > than 2 seconds (startsecs)
+2025-12-08 23:30:48,952 WARN received SIGTERM indicating exit request
+2025-12-08 23:30:48,960 INFO waiting for novnc, vnc to die
+2025-12-08 23:30:49,961 WARN stopped: vnc (terminated by SIGTERM)
+2025-12-08 23:30:49,985 INFO stopped: novnc (exit status 0)
+2025-12-08 23:33:12,721 INFO Set uid to user 0 succeeded
+2025-12-08 23:33:12,723 INFO supervisord started with pid 36
+2025-12-08 23:33:13,727 INFO spawned: 'novnc' with pid 37
+2025-12-08 23:33:13,733 INFO spawned: 'vnc' with pid 38
+2025-12-08 23:33:16,023 INFO success: novnc entered RUNNING state, process has stayed up for > than 2 seconds (startsecs)
+2025-12-08 23:33:16,023 INFO success: vnc entered RUNNING state, process has stayed up for > than 2 seconds (startsecs)

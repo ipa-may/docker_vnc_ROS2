@@ -1,23 +1,30 @@
-name: docker-ros2-control-demos-custom
 services:
-  ros2_control_demos_custom:
+  ros2-jazzy-tigervnc-ros2-control:
     build:
       context: .
-      dockerfile: ./Dockerfile-vnc-ros2-control
-    stdin_open: true
-    tty: true
-    network_mode: host
-    ipc: host
-    user: ros
+      dockerfile: Dockerfile-vnc-ros2-control
+    image: ros2-jazzy-tigervnc-ros2-control
+    container_name: ros2-jazzy-tigervnc-ros2-control
     environment:
-      - DISPLAY=$DISPLAY
-      - QT_X11_NO_MITSHM=1
-      # - NVIDIA_DRIVER_CAPABILITIES=all
-      # - NVIDIA_VISIBLE_DEVICES=all
-    devices:
-      - /dev/dri:/dev/dri
+      USER: ros
+      PASSWORD: change-me
+      VNC_GEOMETRY: 1600x900
+      VNC_DEPTH: "24"
+      VNC_PORT: "5901"
+      NO_VNC_PORT: "6080"
+      QT_X11_NO_MITSHM: "1"
+      LIBGL_DRI3_DISABLE: "1"
+      RMW_IMPLEMENTATION: rmw_fastrtps_cpp # rmw_cyclonedds_cpp
+      ROS_DOMAIN_ID: "7"
+      ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
+    ports:
+      - "6080:6080" # noVNC browser access
+      - "5901:5901" # TigerVNC client
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./ros2_ws:/home/ros/ros2_ws
       - ../../src:/home/ros/ros2_ws/src
-    command: >
-      bash -c "source /opt/ros/jazzy/setup.bash && exec bash"
+    labels:
+      devcontainer.metadata: >-
+        {"remoteUser":"ros","workspaceFolder":"/home/ros/ros2_ws"}
+    shm_size: "2gb"
+    tty: true
