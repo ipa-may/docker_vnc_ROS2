@@ -1,0 +1,53 @@
+name: Build & Push tigerVNC 03 Jazzy MATE Firefox Image
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'tigerVNC/03_jazzy-tigerVNC-matedesktop-firefox/**'
+      - '.github/workflows/build-and-push-tigerVNC_03_jazzy_mate_firefox.yml'
+      - '.github/workflows/docker-metadata.yml'
+  workflow_dispatch:
+
+jobs:
+  metadata:
+    name: Prepare metadata
+    uses: ./.github/workflows/docker-metadata.yml
+    with:
+      image: ghcr.io/${{ github.repository_owner }}/ros2-tigervnc-novnc
+      tags: |
+        type=ref,event=branch,suffix=-mate-firefox
+        type=sha,suffix=-mate-firefox
+        type=raw,value=jazzy-mate-firefox
+
+  build:
+    name: Build & Push
+    runs-on: ubuntu-latest
+    needs: metadata
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./tigerVNC/03_jazzy-tigerVNC-matedesktop-firefox
+          push: true
+          provenance: false
+          tags: ${{ needs.metadata.outputs.tags }}
+          labels: ${{ needs.metadata.outputs.labels }}
+          build-args: |
+            INSTALL_PACKAGE=desktop
