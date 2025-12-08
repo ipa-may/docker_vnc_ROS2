@@ -7,7 +7,7 @@
 | [![Build & Push tigerVNC 01 Jazzy VSCode XFCE Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-tigerVNC_01_jazzy_vscode_xfce.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-tigerVNC_01_jazzy_vscode_xfce.yml) | `ghcr.io/ipa-may/ros2-tigervnc-novnc:jazzy-vscode-xfce`  |
 | [![Build & Push tigerVNC 02 Jazzy XFCE Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-tigerVNC_02_jazzy_xfce.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-tigerVNC_02_jazzy_xfce.yml) | `ghcr.io/ipa-may/ros2-tigervnc-novnc:jazzy-xfce`         |
 | [![Build & Push tigerVNC 03 Jazzy MATE Firefox Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-tigerVNC_03_jazzy_mate_firefox.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-tigerVNC_03_jazzy_mate_firefox.yml) | `ghcr.io/ipa-may/ros2-tigervnc-novnc:jazzy-mate-firefox` |
-| _work in progress_ (tigerVNC 04 Jazzy ros2_control) | `ghcr.io/ipa-may/ros2-tigervnc-novnc:jazzy-ros2-control` |
+| [![Build & Push tigerVNC 04 Jazzy ros2_control Image](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-tigerVNC_04_jazzy_ros2_control.yml/badge.svg)](https://github.com/ipa-may/docker_vnc_ROS2/actions/workflows/build-and-push-tigerVNC_04_jazzy_ros2_control.yml) | `ghcr.io/ipa-may/ros2-tigervnc-novnc:jazzy-ros2-control` |
 
 ## Quick image differences
 
