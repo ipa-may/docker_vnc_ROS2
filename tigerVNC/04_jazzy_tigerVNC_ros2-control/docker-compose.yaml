@@ -1,0 +1,23 @@
+name: docker-ros2-control-demos-custom
+services:
+  ros2_control_demos_custom:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-vnc-ros2-control
+    stdin_open: true
+    tty: true
+    network_mode: host
+    ipc: host
+    user: ros
+    environment:
+      - DISPLAY=$DISPLAY
+      - QT_X11_NO_MITSHM=1
+      # - NVIDIA_DRIVER_CAPABILITIES=all
+      # - NVIDIA_VISIBLE_DEVICES=all
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ../../src:/home/ros/ros2_ws/src
+    command: >
+      bash -c "source /opt/ros/jazzy/setup.bash && exec bash"

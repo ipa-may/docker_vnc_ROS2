@@ -1,57 +1,51 @@
-# VS Code + VNC Pack (ROS 2 Jazzy + XFCE, no noVNC)
+# VS Code + VNC/noVNC Pack (ROS 2 Jazzy + XFCE)
 
-Use **VNC** for visualization (RViz2, Gazebo, rqt) and **VS Code Dev Containers** for coding.
-This image excludes browsers/IDEs and **noVNC** to stay lean.
+Use TigerVNC/noVNC for RViz2, Gazebo, and rqt, and **VS Code Dev Containers** for coding. Bundles ROS 2 Jazzy, XFCE, TigerVNC with a web client, and Mesa helpers for stable GL over VNC.
 
 ## Files
 
-- `Dockerfile` — ROS 2 Jazzy + XFCE + TigerVNC
-- `entrypoint.sh` — creates user, configures VNC, launches XFCE
-- `supervisord.conf` — runs the VNC server
-- `docker-compose.yml` — builds/runs the container
-- `.devcontainer/devcontainer.json` — attaches VS Code
-- `ros2_ws/` — your workspace
+- `Dockerfile` - ROS 2 Jazzy + XFCE + TigerVNC/noVNC
+- `entrypoint.xfce.sh` - creates user, configures VNC/noVNC, launches XFCE
+- `supervisord.xfce.conf` - runs the VNC server and websockify
+- `docker-compose.yml` - local build/run (plus a prebuilt registry service)
+- `.devcontainer/devcontainer.json` - attaches VS Code
+- `ros2_ws/` - your workspace
 
 ## Run
 
 ```bash
 docker compose up --build
-# Connect your VNC viewer to: localhost:5901
-# Password = 'PASSWORD' from docker-compose.yml
 ```
 
-In **VS Code**:
+- Browser (noVNC): http://localhost:8080
+- VNC client: localhost:5901
+- Password: value of `PASSWORD` in `docker-compose.yml` (default `change-me`)
 
-- Install **Dev Containers** extension
-- Reopen the folder **in container** (you'll be attached to /home/ubuntu/ros2_ws)
+### VS Code Dev Containers
+
+1. Install the Dev Containers extension.
+2. Open this folder and choose "Reopen in Container".
+3. You will land in `/home/ubuntu/ros2_ws` (mounted from `./ros2_ws`).
 
 ## Customize
 
-- Resolution: set `VNC_GEOMETRY` (e.g. 1920x1080)
-- Depth: set `VNC_DEPTH` (e.g. 24)
-- User/Pass: set `USER` and `PASSWORD`
-- ROS install: build with `INSTALL_PACKAGE=ros-base` or `desktop`
+- Resolution/depth: `VNC_GEOMETRY` (e.g. 1920x1080), `VNC_DEPTH` (e.g. 24)
+- ROS install: build arg `INSTALL_PACKAGE=ros-base` or `desktop`
+- User/pass: `USER`, `PASSWORD`
+- Ports: host bindings for 6080/5901 in compose; remove `8080:6080` if you do not want noVNC exposed
+- DDS/ROS graph: `RMW_IMPLEMENTATION`, `ROS_DOMAIN_ID`, `ROS_AUTOMATIC_DISCOVERY_RANGE`
+- Stability toggles:
+  - `QT_X11_NO_MITSHM=1` avoids X11 shared-memory issues
+  - `LIBGL_DRI3_DISABLE=1` dodges some mesa black screens
+  - `LIBGL_ALWAYS_SOFTWARE=1` forces software rendering (slower but very robust)
+- Shared memory: `shm_size: "2gb"` in compose for Gazebo cameras/physics
+- GPU (optional): uncomment the NVIDIA section in `docker-compose.yml` when the NVIDIA Container Toolkit is available
 
-## GPU (optional)
+## Security
 
-Uncomment the GPU section in `docker-compose.yml` and ensure NVIDIA drivers + toolkit are installed.
-
-## Notes
-
-- Port 5901 is exposed only; no browser client is included.
-- For remote access, consider SSH tunneling your VNC connection.
-
-About the compose flags:
-
-- `QT_X11_NO_MITSHM=1` avoids shared-memory X11 issues in virtual displays.
-- `LIBGL_DRI3_DISABLE=1` prevents some DRI3/mesa black-screen quirks under VNC.
-- `LIBGL_ALWAYS_SOFTWARE=1` forces software rendering (slower but bulletproof if needed).
-- `shm_size: "2gb"` gives Gazebo camera/physics plenty of shared memory.
+- Change `PASSWORD` before exposing beyond localhost.
+- Prefer SSH tunnels or VPN if remote.
 
 ## Notes for Windows hosts (Docker Desktop + WSL2)
 
-This remains software rendering via VNC (expected). It’s fine for most dev/testing.
-
-We can use hardware acceleration by switching to a GPU-enabled stack (e.g., use a VirtualGL/TurboVNC base and enable NVIDIA in Docker Desktop).
-
-Keep your workspace under the WSL2 Linux filesystem (or a named volume) for better I/O than mounting from NTFS.
+Software rendering over VNC is expected. For faster 3D, switch to a GPU-enabled stack (for example, VirtualGL/TurboVNC) and ensure Docker Desktop has GPU sharing enabled. Keep your workspace under the WSL2 Linux filesystem (or a named volume) for better I/O than mounting from NTFS.

@@ -27,3 +27,29 @@ services:
       - ./ros2_ws:/home/ubuntu/ros2_ws
     shm_size: "2gb"
     tty: true
+
+  ros2-jazzy-xfce-registry:
+    image: ghcr.io/ipa-may/ros2-tigervnc-novnc:jazzy-vscode-xfce
+    container_name: ros2-jazzy-xfce-registry
+    user: ubuntu
+    environment:
+      USER: ubuntu
+      PASSWORD: change-me
+      DISPLAY: ":1"
+      XAUTHORITY: /home/ubuntu/.Xauthority
+      VNC_GEOMETRY: 1600x900
+      VNC_DEPTH: "24"
+      VNC_PORT: "5901"
+      NO_VNC_PORT: "6080"
+      QT_X11_NO_MITSHM: "1"
+      LIBGL_DRI3_DISABLE: "1"
+      RMW_IMPLEMENTATION: rmw_fastrtps_cpp # rmw_cyclonedds_cpp
+      ROS_DOMAIN_ID: "7"
+      ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
+    ports:
+      - "8081:6080" # noVNC in browser (different host port to avoid collision)
+      - "5902:5901" # VNC client (different host port)
+    volumes:
+      - ./ros2_ws:/home/ubuntu/ros2_ws
+    shm_size: "2gb"
+    tty: true
