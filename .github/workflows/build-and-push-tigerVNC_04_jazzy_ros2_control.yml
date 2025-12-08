@@ -45,6 +45,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./tigerVNC/04_jazzy_tigerVNC_ros2-control
+          file: ./tigerVNC/04_jazzy_tigerVNC_ros2-control/Dockerfile-vnc-ros2-control
           push: true
           provenance: false
           tags: ${{ needs.metadata.outputs.tags }}
