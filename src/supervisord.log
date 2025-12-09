@@ -32,3 +32,9 @@
 2025-12-08 23:33:13,733 INFO spawned: 'vnc' with pid 38
 2025-12-08 23:33:16,023 INFO success: novnc entered RUNNING state, process has stayed up for > than 2 seconds (startsecs)
 2025-12-08 23:33:16,023 INFO success: vnc entered RUNNING state, process has stayed up for > than 2 seconds (startsecs)
+2025-12-09 00:15:21,474 WARN exited: vnc (terminated by SIGBUS (core dumped); not expected)
+2025-12-09 00:15:22,477 INFO spawnerr: unknown error making dispatchers for 'vnc': EIO
+2025-12-09 00:15:23,478 INFO spawnerr: unknown error making dispatchers for 'vnc': EIO
+2025-12-09 00:15:25,480 INFO spawnerr: unknown error making dispatchers for 'vnc': EIO
+2025-12-09 00:15:28,483 INFO spawnerr: unknown error making dispatchers for 'vnc': EIO
+2025-12-09 00:15:28,484 INFO gave up: vnc entered FATAL state, too many start retries too quickly

@@ -1,0 +1,113 @@
+# ===== Stage 1: build soem-denso =====
+FROM osrf/ros:humble-desktop-full AS soem_builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy your source into the build stage.
+# Adjust the path if your repo layout differs.
+COPY ethercat_driver_common/soem-denso /tmp/soem-denso
+
+# Ensure no host build artifacts slipped in
+RUN rm -rf /tmp/soem-denso/build \
+    && find /tmp/soem-denso -name CMakeCache.txt -delete
+
+# Fresh out-of-source build + install
+RUN cmake -S /tmp/soem-denso -B /tmp/soem-denso_build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr/local \
+    && cmake --build /tmp/soem-denso_build -j"$(nproc)" \
+    && cmake --install /tmp/soem-denso_build
+
+# ===== Stage 2: final image =====
+FROM osrf/ros:humble-desktop-full
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Core utilities + ROS packages (includes everything from your previous Dockerfile)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    nano \
+    vim \
+    ethtool \
+    net-tools \
+    cmake \
+    sudo \
+    build-essential \
+    libi2c-dev \
+    python3-colcon-common-extensions \
+    ros-${ROS_DISTRO}-hardware-interface \
+    ros-${ROS_DISTRO}-hardware-interface-testing \
+    ros-${ROS_DISTRO}-controller-manager \
+    ros-${ROS_DISTRO}-velocity-controllers \
+    ros-${ROS_DISTRO}-joint-state-broadcaster \
+    ros-${ROS_DISTRO}-robot-state-publisher \
+    ros-${ROS_DISTRO}-joint-state-publisher-gui \
+    ros-${ROS_DISTRO}-ros2controlcli \
+    ros-${ROS_DISTRO}-xacro \
+    ros-${ROS_DISTRO}-tf2 \
+    ros-${ROS_DISTRO}-tf2-msgs \
+    ros-${ROS_DISTRO}-rviz2 \
+    ros-${ROS_DISTRO}-plotjuggler-ros \
+    && rm -rf /var/lib/apt/lists/*
+
+# Bring in the installed artifacts from the build stage
+COPY --from=soem_builder /usr/local/ /usr/local/
+
+# Make sure CMake finds packages in /usr/local without per-user exports
+ENV CMAKE_PREFIX_PATH="/usr/local:${CMAKE_PREFIX_PATH}"
+
+# Create a non-root user (same as your original)
+ARG USERNAME=admin
+ARG USER_ID=1001
+ARG GROUP_ID=${USER_ID}
+RUN groupadd --gid ${GROUP_ID} ${USERNAME} \
+    && useradd -s /bin/bash --uid ${USER_ID} --gid ${GROUP_ID} -m ${USERNAME} \
+    && mkdir -p /home/${USERNAME}/.config \
+    && chown -R ${USER_ID}:${GROUP_ID} /home/${USERNAME}/.config
+
+# Passwordless sudo for convenience (no 'sudo' in Docker RUN)
+RUN echo "${USERNAME} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} \
+    && chmod 0440 /etc/sudoers.d/${USERNAME}
+
+# Ensure ROS setup is readable (usually already is)
+RUN chmod +rx /opt/ros/${ROS_DISTRO}/setup.bash
+
+# Copy entrypoint and bashrc while still root; set ownership on bashrc
+COPY docker/entrypoint.sh /entrypoint.sh
+COPY --chown=${USER_ID}:${GROUP_ID} docker/bashrc /home/${USERNAME}/.bashrc
+RUN chmod +x /entrypoint.sh
+
+# System-wide ROS env for all users
+COPY docker/ros.sh /etc/profile.d/ros.sh
+RUN chmod 0644 /etc/profile.d/ros.sh
+
+# Sudo should preserve ROS env
+# COPY docker/sudoers_ros_env /etc/sudoers.d/ros_env
+# RUN sed -i 's/\r$//' /etc/sudoers.d/ros_env \
+#     && chmod 0440 /etc/sudoers.d/ros_env \
+#    && visudo -cf /etc/sudoers.d/ros_env
+
+# Sudo should preserve ROS env (create with clean LF and validate)
+RUN printf '%s\n' \
+    'Defaults env_keep += "ROS_DOMAIN_ID RMW_IMPLEMENTATION CYCLONEDDS_URI ROS_LOCALHOST_ONLY ROS_NAMESPACE"' \
+    'Defaults env_keep += "AMENT_PREFIX_PATH COLCON_CURRENT_PREFIX CMAKE_PREFIX_PATH PYTHONPATH LD_LIBRARY_PATH"' \
+    'Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/ros/humble/bin"' \
+    > /etc/sudoers.d/ros_env \
+    && chmod 0440 /etc/sudoers.d/ros_env \
+    && visudo -cf /etc/sudoers.d/ros_env
+
+
+
+# Switch to non-root user and create workspace
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
+RUN mkdir -p /home/${USERNAME}/colcon_ws/src
+
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+CMD ["bash"]

@@ -1,0 +1,76 @@
+{
+  "name": "ROS 2 Humble + XFCE + VNC",
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "service": "ros2-humble-xfce",
+  "runServices": [
+    "ros2-humble-xfce"
+  ],
+  "workspaceFolder": "/home/ros/ros2_ws",
+  // Features: official VS Code Dev Container features
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "username": "ros",
+      "nonFreePackages": true,
+      "installZsh": false
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.10"
+    }
+  },
+  // 🧠 VS Code settings inside the container
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.useLibraryCodeForTypes": true,
+    "python.defaultInterpreterPath": "/usr/bin/python3",
+    "ros.distro": "humble",
+    "editor.formatOnSave": true,
+    "files.eol": "\n"
+  },
+  // ✅ Automatically install useful extensions
+  "extensions": [
+    "ms-python.python",
+    "ms-iot.vscode-ros",
+    "ms-azuretools.vscode-docker",
+    "twxs.cmake",
+    "ms-vscode.cmake-tools",
+    "ms-vscode.cpptools-extension-pack"
+  ],
+  // 🏗️ Optional build args and environment variables
+  "build": {
+    "args": {
+      "INSTALL_PACKAGE": "ros-base"
+    }
+  },
+  "containerEnv": {
+    "ROS_DISTRO": "humble",
+    "DISPLAY": ":1",
+    "VNC_PORT": "5901",
+    "VNC_GEOMETRY": "1600x900",
+    "VNC_DEPTH": "24",
+    "USER": "ros",
+    "PASSWORD": "ubuntu"
+  },
+  // 🧩 Mounts your workspace and ROS directories
+  "mounts": [
+    "source=${localWorkspaceFolder}/ros2_ws,target=/home/ros/ros2_ws,type=bind",
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind"
+  ],
+  // 🔧 Run these after the container starts
+  "postCreateCommand": "sudo rosdep update || true",
+  // 🔌 Forward VNC ports for local access
+  "forwardPorts": [
+    5901
+  ],
+  // 🪟 Optional GUI preview (if using noVNC)
+  "portsAttributes": {
+    "5901": {
+      "label": "VNC Display"
+    }
+  },
+  // 🐳 Run as the non-root user
+  "remoteUser": "ros"
+}

@@ -1,0 +1,58 @@
+services:
+  ros2-humble-xfce:
+    build:
+      context: .
+      args:
+        INSTALL_PACKAGE: desktop # or 'ros-base' for leaner
+        USER_ID: ${ROS_USER_ID:-1000}
+        GROUP_ID: ${ROS_GROUP_ID:-1000}
+    image: ros2-humble-xfce-vnc
+    container_name: ros2-humble-xfce
+    user: "${ROS_USER_ID:-1000}:${ROS_GROUP_ID:-1000}"
+    environment:
+      USER: ros
+      PASSWORD: change-me
+      VNC_GEOMETRY: 1600x900
+      VNC_DEPTH: "24"
+      VNC_PORT: "5901"
+      NO_VNC_PORT: "6080"
+      # ---- Stability helpers for Gazebo/RViz over VNC ----
+      QT_X11_NO_MITSHM: "1"
+      LIBGL_DRI3_DISABLE: "1"
+      # LIBGL_ALWAYS_SOFTWARE: "1"   # enable only as last resort; slower but very stable
+      RMW_IMPLEMENTATION: rmw_fastrtps_cpp # rmw_cyclonedds_cpp
+      ROS_DOMAIN_ID: "7"
+      ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
+    ports:
+      - "8080:6080" # noVNC in browser; remove if you don't use noVNC
+      - "5901:5901" # VNC client
+    volumes:
+      - ./ros2_ws:/home/ros/ros2_ws
+    shm_size: "2gb"
+    tty: true
+
+  ros2-humble-xfce-registry:
+    image: ghcr.io/ipa-may/ros2-tigervnc-novnc:humble-vscode-xfce
+    container_name: ros2-humble-xfce-registry
+    user: ros
+    environment:
+      USER: ros
+      PASSWORD: change-me
+      DISPLAY: ":1"
+      XAUTHORITY: /home/ros/.Xauthority
+      VNC_GEOMETRY: 1600x900
+      VNC_DEPTH: "24"
+      VNC_PORT: "5901"
+      NO_VNC_PORT: "6080"
+      QT_X11_NO_MITSHM: "1"
+      LIBGL_DRI3_DISABLE: "1"
+      RMW_IMPLEMENTATION: rmw_fastrtps_cpp # rmw_cyclonedds_cpp
+      ROS_DOMAIN_ID: "7"
+      ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
+    ports:
+      - "8081:6080" # noVNC in browser (different host port to avoid collision)
+      - "5902:5901" # VNC client (different host port)
+    volumes:
+      - ./ros2_ws:/home/ros/ros2_ws
+    shm_size: "2gb"
+    tty: true
