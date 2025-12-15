@@ -1,11 +1,14 @@
 services:
-  ros2-jazzy-tigervnc-ros2-control:
+  ros2-humble-tigervnc-ros2-control:
     build:
       context: .
       dockerfile: Dockerfile-vnc-ros2-control
-    image: ros2-jazzy-tigervnc-ros2-control
-    container_name: ros2-jazzy-tigervnc-ros2-control
-    #network_mode: host
+      args:
+        USER_ID: ${ROS_USER_ID:-1000}
+        GROUP_ID: ${ROS_GROUP_ID:-1000}
+    image: ros2-humble-tigervnc-ros2-control
+    container_name: ros2-humble-tigervnc-ros2-control
+    user: "${ROS_USER_ID:-1000}:${ROS_GROUP_ID:-1000}"
     environment:
       USER: ros
       PASSWORD: change-me
@@ -22,6 +25,7 @@ services:
       - "6080:6080" # noVNC browser access
       - "5901:5901" # TigerVNC client
     volumes:
+      # - ./ros2_ws:/home/ros/ros2_ws
       - ../../src:/home/ros/ros2_ws/src
     labels:
       devcontainer.metadata: >-

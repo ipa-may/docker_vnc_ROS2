@@ -1,5 +1,5 @@
-# TigerVNC multi-stage image with ros2_control stack
-ARG ROS_DISTRO=jazzy
+# TigerVNC multi-stage image with ros2_control stack for ROS 2 Humble
+ARG ROS_DISTRO=humble
 
 # Stage 1: base TigerVNC/noVNC desktop
 FROM ghcr.io/ipa-may/ros2-tigervnc-novnc:${ROS_DISTRO}-vscode-xfce AS tigervnc-base
@@ -32,9 +32,6 @@ RUN apt-get update -q && \
       ros-${ROS_DISTRO}-tf2 \
       ros-${ROS_DISTRO}-tf2-msgs \
       ros-${ROS_DISTRO}-rviz2 \
-      ros-${ROS_DISTRO}-ur \
-      ros-${ROS_DISTRO}-moveit \
-      ros-${ROS_DISTRO}-octomap \
       ros-${ROS_DISTRO}-plotjuggler-ros && \
     rm -rf /var/lib/apt/lists/*
 
@@ -44,7 +41,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Align container user/group with host IDs when provided
 ARG USERNAME=ros
-ARG USER_ID=1001
+ARG USER_ID=1000
 ARG GROUP_ID=$USER_ID
 
 RUN EXISTING_GROUP=$(getent group "$GROUP_ID" | cut -d: -f1 || true) \
@@ -70,8 +67,8 @@ RUN EXISTING_GROUP=$(getent group "$GROUP_ID" | cut -d: -f1 || true) \
       useradd -s /bin/bash --uid "$USER_ID" --gid "$GROUP_ID" -m "$USERNAME"; \
       USER_NAME=$USERNAME; \
     fi \
- && mkdir -p /home/"$USERNAME"/.config \
- && chown "$USER_ID":"$GROUP_ID" /home/"$USERNAME"/.config
+ && mkdir -p /home/"$USERNAME"/.config /home/"$USERNAME"/.ros/log \
+ && chown -R "$USER_ID":"$GROUP_ID" /home/"$USERNAME"/.config /home/"$USERNAME"/.ros
 
 # Copy ros2_control stack into runtime ROS tree
 COPY --from=ros2-control-builder /opt/ros/${ROS_DISTRO} /opt/ros/${ROS_DISTRO}
@@ -82,10 +79,7 @@ RUN apt-get update -q && \
       python3-colcon-common-extensions \
       python3-colcon-argcomplete \
       libqt5x11extras5 \
-      liboctomap1.9 \
-      python3-filelock \
-      liblua5.1-0 \
-      libfcl0.7 && \
+      liblua5.1-0 && \
     rm -rf /var/lib/apt/lists/*
 
 # Ensure ros user can access ROS setup file

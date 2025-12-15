@@ -1,6 +1,6 @@
-# TigerVNC ROS 2 Jazzy + ros2_control
+# TigerVNC ROS 2 Humble + ros2_control
 
-This variant layers the ros2_control / Gazebo tooling onto the existing `ghcr.io/ipa-may/ros2-tigervnc-novnc:jazzy-vscode-xfce` desktop while keeping the Turbo/TigerVNC entrypoint intact. Multi-stage building keeps the VNC stack untouched and copies the heavy ROS dependencies from a separate builder stage. Highlights:
+This variant layers the ros2_control / Gazebo tooling onto the existing `ghcr.io/ipa-may/ros2-tigervnc-novnc:humble-vscode-xfce` desktop while keeping the Turbo/TigerVNC entrypoint intact. Multi-stage building keeps the VNC stack untouched and copies the heavy ROS dependencies from a separate builder stage. Highlights:
 
 - TigerVNC + noVNC + XFCE desktop identical to the upstream image.
 - ros2_control, ros2_controllers, PlotJuggler, RViz2, ros-gz/gz-harmonic and friends preinstalled.
@@ -10,7 +10,7 @@ This variant layers the ros2_control / Gazebo tooling onto the existing `ghcr.io
 ## Build & run
 
 ```bash
-cd tigerVNC/04_jazzy_tigerVNC_ros2-control
+cd tigerVNC/04_humble_tigerVNC_ros2-control
 docker compose build    # or: docker compose build --no-cache
 docker compose up -d
 ```
@@ -19,7 +19,7 @@ Access options once the container is running:
 
 - Browser: `http://localhost:6080` (noVNC). Password defaults to `change-me`.
 - Native VNC client: connect to `localhost:5901`.
-- CLI shell as `ros`: `docker exec -it -u ros ros2-jazzy-tigervnc-ros2-control bash`.
+- CLI shell as `ros`: `docker exec -it -u ros ros2-humble-tigervnc-ros2-control bash`.
 
 The workspace mount points in `docker-compose.yaml` map:
 
@@ -28,11 +28,13 @@ The workspace mount points in `docker-compose.yaml` map:
 
 If you need a different layout, adjust the `volumes` section accordingly.
 
+> Tip: set `ROS_USER_ID` / `ROS_GROUP_ID` before `docker compose up` if you want the container to match your host UID/GID (keeps mounted workspaces writable).
+
 ## VS Code Dev Containers
 
 Thanks to the `devcontainer.metadata` label in `docker-compose.yaml`, you can attach with **Dev Containers: Attach to Running Container…** and VS Code will:
 
-1. Connect to the `ros2-jazzy-tigervnc-ros2-control` service.
+1. Connect to the `ros2-humble-tigervnc-ros2-control` service.
 2. Open `/home/ros/ros2_ws` as the workspace.
 3. Use the non-root `ros` user automatically.
 
