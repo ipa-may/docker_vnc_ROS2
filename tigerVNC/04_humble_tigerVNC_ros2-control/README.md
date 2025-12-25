@@ -1,11 +1,11 @@
 # TigerVNC ROS 2 Humble + ros2_control
 
-This variant layers the ros2_control / Gazebo tooling onto the existing `ghcr.io/ipa-may/ros2-tigervnc-novnc:humble-vscode-xfce` desktop while keeping the Turbo/TigerVNC entrypoint intact. Multi-stage building keeps the VNC stack untouched and copies the heavy ROS dependencies from a separate builder stage. Highlights:
+A TigerVNC/noVNC desktop with the ros2_control stack preinstalled on top of `ghcr.io/ipa-may/ros2-tigervnc-novnc:humble-vscode-xfce`. The multi-stage build keeps the upstream VNC desktop intact while adding controllers, RViz2, PlotJuggler, and supporting dependencies.
 
-- TigerVNC + noVNC + XFCE desktop identical to the upstream image.
-- ros2_control, ros2_controllers, PlotJuggler, RViz2, ros-gz/gz-harmonic and friends preinstalled.
-- Workspace volumes mounted under `/home/ros/ros2_ws` (see compose file) so you can drop source packages under `src`.
-- VS Code attaches as the `ros` user automatically via the `devcontainer.metadata` label, and ROS environments are pre-sourced before the VNC entrypoint starts.
+- TigerVNC + noVNC + XFCE desktop with the original entrypoint preserved.
+- ros2_control, ros2_controllers, hardware interfaces, RViz2, PlotJuggler baked in.
+- Dev Containers label points VS Code at `/home/ros/ros2_ws` as `ros`.
+- Only the source tree is bind-mounted by default; add a workspace volume if you want to persist build artifacts.
 
 ## Build & run
 
@@ -15,33 +15,25 @@ docker compose build    # or: docker compose build --no-cache
 docker compose up -d
 ```
 
-Access options once the container is running:
+Access once running:
 
-- Browser: `http://localhost:6080` (noVNC). Password defaults to `change-me`.
-- Native VNC client: connect to `localhost:5901`.
-- CLI shell as `ros`: `docker exec -it -u ros ros2-humble-tigervnc-ros2-control bash`.
+- Browser (noVNC): `http://localhost:6082` (password: `change-me`).
+- TigerVNC client: connect to `localhost:5902`.
+- Shell as `ros`: `docker exec -it -u ros ros2-humble-tigervnc-ros2-control bash`.
 
-The workspace mount points in `docker-compose.yaml` map:
+## Volumes and workspace layout
 
-- `./ros2_ws` → `/home/ros/ros2_ws` (colcon workspace state: build/install/logs).
 - `../../src` → `/home/ros/ros2_ws/src` (shared source tree).
+- Add `./ros2_ws:/home/ros/ros2_ws` to `volumes` if you want build/install/logs to persist on the host.
 
-If you need a different layout, adjust the `volumes` section accordingly.
-
-> Tip: set `ROS_USER_ID` / `ROS_GROUP_ID` before `docker compose up` if you want the container to match your host UID/GID (keeps mounted workspaces writable).
+UID/GID alignment: set `ROS_USER_ID` and `ROS_GROUP_ID` before `docker compose build/up` (they feed into `USER_ID`/`GROUP_ID` build args and the service `user:` directive).
 
 ## VS Code Dev Containers
 
-Thanks to the `devcontainer.metadata` label in `docker-compose.yaml`, you can attach with **Dev Containers: Attach to Running Container…** and VS Code will:
+The `devcontainer.metadata` label lets **Dev Containers: Attach to Running Container…** connect directly to the `ros2-humble-tigervnc-ros2-control` service, open `/home/ros/ros2_ws`, and use the `ros` user without adding a `.devcontainer` folder. Add one if you want extra extensions or settings.
 
-1. Connect to the `ros2-humble-tigervnc-ros2-control` service.
-2. Open `/home/ros/ros2_ws` as the workspace.
-3. Use the non-root `ros` user automatically.
+## Extending
 
-No additional `.devcontainer` folder is required, but you can add one if you want custom extensions or settings.
-
-## Extending the image
-
-- Drop additional apt packages in the final `runtime` stage if they must exist in the running desktop.
-- Add custom ros2_control packages by cloning them into `ros2_ws/src` (host bind mount), then build with `colcon build` inside the container.
-- Keep the entrypoint wrapper (`entrypoint_ros2_control.sh`) intact so ROS setup scripts run before handing off to the original VNC entrypoint.
+- Add extra apt packages to the final `runtime` stage in `Dockerfile-vnc-ros2-control`.
+- Clone additional ros2_control packages into `ros2_ws/src` (host bind mount) and build with `colcon build` inside the container.
+- Keep `entrypoint_ros2_control.sh` intact so the ROS environment is sourced before handing off to the VNC startup.
