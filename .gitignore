@@ -1,1 +1,2 @@
-/src
+# Ignore all local workspace sources
+src/

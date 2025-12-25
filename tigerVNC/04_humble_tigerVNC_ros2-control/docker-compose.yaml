@@ -21,11 +21,11 @@ services:
       RMW_IMPLEMENTATION: rmw_fastrtps_cpp # rmw_cyclonedds_cpp
       ROS_DOMAIN_ID: "7"
       ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
+      PYTHON_EXECUTABLE: /usr/bin/python3
     ports:
-      - "6080:6080" # noVNC browser access
-      - "5901:5901" # TigerVNC client
+      - "6082:6080" # noVNC browser access
+      - "5902:5901" # TigerVNC client
     volumes:
-      # - ./ros2_ws:/home/ros/ros2_ws
       - ../../src:/home/ros/ros2_ws/src
     labels:
       devcontainer.metadata: >-

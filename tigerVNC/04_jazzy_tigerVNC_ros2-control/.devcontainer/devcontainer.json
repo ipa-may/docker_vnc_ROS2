@@ -1,11 +1,11 @@
 {
-  "name": "ROS 2 Humble + XFCE + VNC",
+  "name": "ROS 2 Jazzy + XFCE + VNC",
   "dockerComposeFile": [
     "../docker-compose.yaml"
   ],
-  "service": "ros2-humble-tigervnc-ros2-control",
+  "service": "ros2-jazzy-tigervnc-ros2-control",
   "runServices": [
-    "ros2-humble-tigervnc-ros2-control"
+    "ros2-jazzy-tigervnc-ros2-control"
   ],
   "workspaceFolder": "/home/ros/ros2_ws",
   // Features: official VS Code Dev Container features
@@ -17,7 +17,7 @@
       "installZsh": false
     },
     "ghcr.io/devcontainers/features/python:1": {
-      "version": "3.10"
+      "version": "3.12"
     }
   },
   // VS Code settings inside the container
@@ -26,7 +26,7 @@
     "python.analysis.autoImportCompletions": true,
     "python.analysis.useLibraryCodeForTypes": true,
     "python.defaultInterpreterPath": "/usr/bin/python3",
-    "ros.distro": "humble",
+    "ros.distro": "jazzy",
     "editor.formatOnSave": true,
     "files.eol": "\n"
   },
@@ -47,7 +47,7 @@
     }
   },
   "containerEnv": {
-    "ROS_DISTRO": "humble",
+    "ROS_DISTRO": "jazzy",
     "DISPLAY": ":1",
     "VNC_PORT": "5901",
     "VNC_GEOMETRY": "1600x900",
