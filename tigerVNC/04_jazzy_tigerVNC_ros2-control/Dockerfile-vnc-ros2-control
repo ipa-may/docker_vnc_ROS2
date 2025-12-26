@@ -90,6 +90,14 @@ RUN apt-get update -q && \
       libfcl0.7 && \
     rm -rf /var/lib/apt/lists/*
 
+# Prefer the system Python for builds and avoid a devcontainer shim Python
+RUN rm -rf /usr/local/python || true && \
+    ln -sf /usr/bin/python3 /usr/local/bin/python3 && \
+    ln -sf /usr/bin/pip3 /usr/local/bin/pip3
+
+# Hint CMake/colcon to use the system interpreter
+ENV CMAKE_ARGS="-DPython3_EXECUTABLE=/usr/bin/python3"
+
 # Ensure ros user can access ROS setup file
 RUN chmod +rx /opt/ros/${ROS_DISTRO}/setup.bash
 
