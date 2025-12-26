@@ -90,26 +90,6 @@ RUN apt-get update -q && \
       libfcl0.7 && \
     rm -rf /var/lib/apt/lists/*
 
-# Ensure the Python ament/CMake finds (/usr/local/python/current/bin/python3)
-# can import catkin_pkg; copy the apt-installed module into its site-packages.
-RUN set -e; \
-    SYS_SITE=$(/usr/bin/python3 - <<'PY' \
-import site; \
-print([p for p in site.getsitepackages() if "dist-packages" in p][-1]) \
-PY
-); \
-    LOCAL_SITE=$(/usr/local/python/current/bin/python3 - <<'PY' \
-import site; \
-print([p for p in site.getsitepackages() if "dist-packages" in p][-1]) \
-PY
-); \
-    echo "Copying catkin_pkg from ${SYS_SITE} to ${LOCAL_SITE}"; \
-    mkdir -p "${LOCAL_SITE}"; \
-    cp -r "${SYS_SITE}/catkin_pkg" "${LOCAL_SITE}/"; \
-    if compgen -G "${SYS_SITE}/catkin_pkg"*info >/dev/null; then \
-      cp -r ${SYS_SITE}/catkin_pkg*info "${LOCAL_SITE}/"; \
-    fi
-
 # Ensure ros user can access ROS setup file
 RUN chmod +rx /opt/ros/${ROS_DISTRO}/setup.bash
 

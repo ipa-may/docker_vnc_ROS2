@@ -36,6 +36,14 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
 # Initialize rosdep (ok if already inited)
 RUN rosdep init || true && rosdep update
 
+# Force the system Python to be the default (avoid /usr/local/python/current)
+RUN rm -rf /usr/local/python || true && \
+    ln -sf /usr/bin/python3 /usr/local/bin/python3 && \
+    ln -sf /usr/bin/pip3 /usr/local/bin/pip3
+
+# Hint CMake/colcon to use the system interpreter
+ENV CMAKE_ARGS="-DPython3_EXECUTABLE=/usr/bin/python3"
+
 # Default environment (can be overridden by compose)
 ENV DISPLAY=:1 \
     VNC_PORT=5901 \
