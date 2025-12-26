@@ -92,6 +92,8 @@ RUN apt-get update -q && \
 
 # Prefer the system Python for builds and avoid a devcontainer shim Python
 RUN rm -rf /usr/local/python || true && \
+    mkdir -p /usr/local/python/current/bin && \
+    ln -sf /usr/bin/python3 /usr/local/python/current/bin/python3 && \
     ln -sf /usr/bin/python3 /usr/local/bin/python3 && \
     ln -sf /usr/bin/pip3 /usr/local/bin/pip3
 
