@@ -15,9 +15,6 @@
       "username": "ros",
       "nonFreePackages": true,
       "installZsh": false
-    },
-    "ghcr.io/devcontainers/features/python:1": {
-      "version": "3.12"
     }
   },
   // VS Code settings inside the container
