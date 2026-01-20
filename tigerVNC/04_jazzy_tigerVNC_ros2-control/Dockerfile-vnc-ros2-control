@@ -85,6 +85,7 @@ RUN apt-get update -q && \
       python3-catkin-pkg-modules \
       libqt5x11extras5 \
       liboctomap1.9 \
+      libcap-dev \
       python3-filelock \
       liblua5.1-0 \
       libfcl0.7 && \
